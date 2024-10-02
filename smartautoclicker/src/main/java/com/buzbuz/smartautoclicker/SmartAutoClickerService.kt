@@ -25,7 +25,6 @@ import android.util.AndroidRuntimeException
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-
 import com.buzbuz.smartautoclicker.SmartAutoClickerService.Companion.LOCAL_SERVICE_INSTANCE
 import com.buzbuz.smartautoclicker.SmartAutoClickerService.Companion.getLocalService
 import com.buzbuz.smartautoclicker.core.base.AndroidExecutor
@@ -43,14 +42,11 @@ import com.buzbuz.smartautoclicker.core.dumb.engine.DumbEngine
 import com.buzbuz.smartautoclicker.core.processing.domain.DetectionRepository
 import com.buzbuz.smartautoclicker.feature.qstile.domain.QSTileActionHandler
 import com.buzbuz.smartautoclicker.feature.qstile.domain.QSTileRepository
-import com.buzbuz.smartautoclicker.feature.revenue.IRevenueRepository
 import com.buzbuz.smartautoclicker.feature.smart.debugging.domain.DebuggingRepository
-
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.FileDescriptor
 import java.io.PrintWriter
 import javax.inject.Inject
-
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -79,6 +75,7 @@ class SmartAutoClickerService : AccessibilityService(), AndroidExecutor {
                 field = value
                 LOCAL_SERVICE_CALLBACK?.invoke(field)
             }
+
         /** Callback upon the availability of the [LOCAL_SERVICE_INSTANCE]. */
         private var LOCAL_SERVICE_CALLBACK: ((ILocalService?) -> Unit)? = null
             set(value) {
@@ -127,16 +124,26 @@ class SmartAutoClickerService : AccessibilityService(), AndroidExecutor {
         )
     }
 
-    @Inject lateinit var overlayManager: OverlayManager
-    @Inject lateinit var displayConfigManager: DisplayConfigManager
-    @Inject lateinit var detectionRepository: DetectionRepository
-    @Inject lateinit var dumbEngine: DumbEngine
-    @Inject lateinit var bitmapManager: IBitmapManager
-    @Inject lateinit var qualityRepository: QualityRepository
-    @Inject lateinit var qualityMetricsMonitor: QualityMetricsMonitor
-    @Inject lateinit var revenueRepository: IRevenueRepository
-    @Inject lateinit var tileRepository: QSTileRepository
-    @Inject lateinit var debugRepository: DebuggingRepository
+    @Inject
+    lateinit var overlayManager: OverlayManager
+    @Inject
+    lateinit var displayConfigManager: DisplayConfigManager
+    @Inject
+    lateinit var detectionRepository: DetectionRepository
+    @Inject
+    lateinit var dumbEngine: DumbEngine
+    @Inject
+    lateinit var bitmapManager: IBitmapManager
+    @Inject
+    lateinit var qualityRepository: QualityRepository
+    @Inject
+    lateinit var qualityMetricsMonitor: QualityMetricsMonitor
+
+    // @Inject lateinit var revenueRepository: IRevenueRepository
+    @Inject
+    lateinit var tileRepository: QSTileRepository
+    @Inject
+    lateinit var debugRepository: DebuggingRepository
 
     private var currentScenarioName: String? = null
 
@@ -150,9 +157,11 @@ class SmartAutoClickerService : AccessibilityService(), AndroidExecutor {
                 override fun startDumbScenario(dumbScenario: DumbScenario) {
                     LOCAL_SERVICE_INSTANCE?.startDumbScenario(dumbScenario)
                 }
+
                 override fun startSmartScenario(resultCode: Int, data: Intent, scenario: Scenario) {
                     LOCAL_SERVICE_INSTANCE?.startSmartScenario(resultCode, data, scenario)
                 }
+
                 override fun stop() {
                     LOCAL_SERVICE_INSTANCE?.stop()
                 }
@@ -167,7 +176,7 @@ class SmartAutoClickerService : AccessibilityService(), AndroidExecutor {
             dumbEngine = dumbEngine,
             tileRepository = tileRepository,
             debugRepository = debugRepository,
-            revenueRepository = revenueRepository,
+            // revenueRepository = revenueRepository,
             bitmapManager = bitmapManager,
             androidExecutor = this,
             onStart = { isSmart, name ->
@@ -269,11 +278,14 @@ class SmartAutoClickerService : AccessibilityService(), AndroidExecutor {
         dumbEngine.dump(writer)
         qualityRepository.dump(writer)
 
-        revenueRepository.dump(writer)
+       // revenueRepository.dump(writer)
     }
 
-    override fun onInterrupt() { /* Unused */ }
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) { /* Unused */ }
+    override fun onInterrupt() { /* Unused */
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) { /* Unused */
+    }
 }
 
 /** Tag for the logs. */

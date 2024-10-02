@@ -17,10 +17,8 @@
 package com.buzbuz.smartautoclicker.activity.creation
 
 import android.content.Context
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import com.buzbuz.smartautoclicker.R
 import com.buzbuz.smartautoclicker.core.base.identifier.DATABASE_ID_INSERTION
 import com.buzbuz.smartautoclicker.core.base.identifier.Identifier
@@ -28,12 +26,8 @@ import com.buzbuz.smartautoclicker.core.domain.IRepository
 import com.buzbuz.smartautoclicker.core.domain.model.scenario.Scenario
 import com.buzbuz.smartautoclicker.core.dumb.domain.IDumbRepository
 import com.buzbuz.smartautoclicker.core.dumb.domain.model.DumbScenario
-import com.buzbuz.smartautoclicker.feature.revenue.IRevenueRepository
-import com.buzbuz.smartautoclicker.feature.revenue.UserBillingState
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +40,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScenarioCreationViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    revenueRepository: IRevenueRepository,
+    // revenueRepository: IRevenueRepository,
     private val smartRepository: IRepository,
     private val dumbRepository: IDumbRepository,
 ) : ViewModel() {
@@ -62,10 +56,10 @@ class ScenarioCreationViewModel @Inject constructor(
     private val _selectedType: MutableStateFlow<ScenarioTypeSelection> =
         MutableStateFlow(ScenarioTypeSelection.SMART)
     val scenarioTypeSelectionState: Flow<ScenarioTypeSelectionState> =
-        combine(_selectedType, revenueRepository.userBillingState) { selectedType, billingState ->
+        _selectedType.map /*  combine(_selectedType, revenueRepository.userBillingState)*/ { selectedType/*, billingState*/ ->
             ScenarioTypeSelectionState(
                 dumbItem = ScenarioTypeItem.Dumb,
-                smartItem = ScenarioTypeItem.Smart(isProModeEnabled = billingState == UserBillingState.PURCHASED),
+                smartItem = ScenarioTypeItem.Smart(/*isProModeEnabled = billingState == UserBillingState.PURCHASED*/),
                 selectedItem = selectedType,
             )
         }
@@ -137,20 +131,21 @@ data class ScenarioTypeSelectionState(
 
 sealed class ScenarioTypeItem(val titleRes: Int, val iconRes: Int, val descriptionText: Int) {
 
-    data object Dumb: ScenarioTypeItem(
+    data object Dumb : ScenarioTypeItem(
         titleRes = R.string.item_title_dumb_scenario,
         iconRes = R.drawable.ic_dumb,
         descriptionText = R.string.item_desc_dumb_scenario,
     )
 
-    data class Smart(val isProModeEnabled: Boolean): ScenarioTypeItem(
+    data class Smart(val isProModeEnabled: Boolean = true) : ScenarioTypeItem(
         titleRes = R.string.item_title_smart_scenario,
         iconRes = R.drawable.ic_smart,
         descriptionText =
-            if (isProModeEnabled) R.string.item_desc_smart_scenario_pro_mode
-            else R.string.item_desc_smart_scenario,
+        if (isProModeEnabled) R.string.item_desc_smart_scenario_pro_mode
+        else R.string.item_desc_smart_scenario,
     )
 }
+
 enum class ScenarioTypeSelection {
     DUMB,
     SMART,

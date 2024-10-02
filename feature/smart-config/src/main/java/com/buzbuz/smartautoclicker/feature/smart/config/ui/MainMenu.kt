@@ -107,13 +107,13 @@ class MainMenu(private val onStopClicked: () -> Unit) : OverlayMenu() {
         setOverlayViewVisibility(false)
 
         // Start loading advertisement if needed
-        viewModel.loadAdIfNeeded(context)
+        //viewModel.loadAdIfNeeded(context)
 
-        lifecycleScope.launch {
+    /*    lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch { viewModel.paywallIsVisible.collect(::updateVisibilityForPaywall) }
             }
-        }
+        }*/
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

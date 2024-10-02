@@ -88,8 +88,8 @@ data class ScenarioListUiState(
         data class Selection(
             private val searchEnabled: Boolean,
             private val exportEnabled: Boolean,
-            private val privacyRequired: Boolean,
-            private val canPurchase: Boolean,
+/*            private val privacyRequired: Boolean,
+            private val canPurchase: Boolean,*/
         ) : Menu(
             searchItemState = Item(searchEnabled),
             selectAllItemState = Item(false),
@@ -102,8 +102,8 @@ data class ScenarioListUiState(
                 visible = exportEnabled,
                 enabled = exportEnabled,
             ),
-            privacyItemState = Item(privacyRequired),
-            purchaseItemState = Item(canPurchase),
+        /*    privacyItemState = Item(privacyRequired),
+            purchaseItemState = Item(canPurchase),*/
             troubleshootingItemState = Item(true),
         )
     }

@@ -20,7 +20,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.view.KeyEvent
-
 import com.buzbuz.smartautoclicker.core.base.AndroidExecutor
 import com.buzbuz.smartautoclicker.core.bitmaps.IBitmapManager
 import com.buzbuz.smartautoclicker.core.common.overlays.manager.OverlayManager
@@ -30,13 +29,10 @@ import com.buzbuz.smartautoclicker.core.dumb.domain.model.DumbScenario
 import com.buzbuz.smartautoclicker.core.dumb.engine.DumbEngine
 import com.buzbuz.smartautoclicker.core.processing.domain.DetectionRepository
 import com.buzbuz.smartautoclicker.core.processing.domain.DetectionState
-import com.buzbuz.smartautoclicker.feature.smart.config.ui.MainMenu
 import com.buzbuz.smartautoclicker.feature.dumb.config.ui.DumbMainMenu
 import com.buzbuz.smartautoclicker.feature.qstile.domain.QSTileRepository
-import com.buzbuz.smartautoclicker.feature.revenue.IRevenueRepository
-import com.buzbuz.smartautoclicker.feature.revenue.UserBillingState
+import com.buzbuz.smartautoclicker.feature.smart.config.ui.MainMenu
 import com.buzbuz.smartautoclicker.feature.smart.debugging.domain.DebuggingRepository
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -56,7 +52,7 @@ class LocalService(
     private val bitmapManager: IBitmapManager,
     private val dumbEngine: DumbEngine,
     private val tileRepository: QSTileRepository,
-    private val revenueRepository: IRevenueRepository,
+    //private val revenueRepository: IRevenueRepository,
     private val debugRepository: DebuggingRepository,
     private val androidExecutor: AndroidExecutor,
     private val onStart: (isSmart: Boolean, name: String) -> Unit,
@@ -66,13 +62,16 @@ class LocalService(
 
     /** Scope for this LocalService. */
     private val serviceScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     /** Coroutine job for the delayed start of engine & ui. */
     private var startJob: Job? = null
+
     /** Coroutine job for the paywall result upon start from notification. */
     private var paywallResultJob: Job? = null
 
     /** State of this LocalService. */
     private var state: LocalServiceState = LocalServiceState(isStarted = false, isSmartLoaded = false)
+
     /** True if the overlay is started, false if not. */
     internal val isStarted: Boolean
         get() = state.isStarted
@@ -152,32 +151,32 @@ class LocalService(
             overlayManager.hideAll()
 
             if (state.isSmartLoaded && !detectionRepository.isRunning()) {
-                if (revenueRepository.userBillingState.value == UserBillingState.AD_REQUESTED) startPaywall()
-                else startSmartScenario()
+                /*if (revenueRepository.userBillingState.value == UserBillingState.AD_REQUESTED) startPaywall()
+                else*/ startSmartScenario()
             } else if (!state.isSmartLoaded && !dumbEngine.isRunning.value) {
                 dumbEngine.startDumbScenario()
             }
         }
     }
 
-    private fun startPaywall() {
-        revenueRepository.startPaywallUiFlow(context)
+    /*   private fun startPaywall() {
+           revenueRepository.startPaywallUiFlow(context)
 
-        paywallResultJob = combine(revenueRepository.isBillingFlowInProgress, revenueRepository.userBillingState) { inProgress, state ->
-            if (inProgress) return@combine
+           paywallResultJob = combine(revenueRepository.isBillingFlowInProgress, revenueRepository.userBillingState) { inProgress, state ->
+               if (inProgress) return@combine
 
-            if (state != UserBillingState.AD_REQUESTED) startSmartScenario()
-            paywallResultJob?.cancel()
-            paywallResultJob = null
-        }.launchIn(serviceScope)
-    }
-
+               if (state != UserBillingState.AD_REQUESTED) startSmartScenario()
+               paywallResultJob?.cancel()
+               paywallResultJob = null
+           }.launchIn(serviceScope)
+       }
+   */
     private fun startSmartScenario() {
         serviceScope.launch {
             detectionRepository.startDetection(
                 context,
                 debugRepository.getDebugDetectionListenerIfNeeded(context),
-                revenueRepository.consumeTrial(),
+                //   revenueRepository.consumeTrial(),
             )
         }
     }
