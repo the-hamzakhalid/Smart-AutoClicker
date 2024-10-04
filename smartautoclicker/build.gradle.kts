@@ -52,10 +52,15 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("./smartautoclicker.jks")
+            storeFile = file("../smartautoclicker.jks")
             storePassword = buildParameters["signingStorePassword"].asString()
             keyAlias = buildParameters["signingKeyAlias"].asString()
             keyPassword = buildParameters["signingKeyPassword"].asString()
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -65,7 +70,7 @@ apply { plugin(libs.plugins.buzbuz.androidSigning.get().pluginId) }
 
 // Only apply gms/firebase plugins if we are building for the play store
 if (buildParameters.isBuildForVariant("playStoreRelease")) {
-    apply { plugin(libs.plugins.buzbuz.crashlytics.get().pluginId) }
+ //   apply { plugin(libs.plugins.buzbuz.crashlytics.get().pluginId) }
 }
 
 dependencies {
